@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { FilmsRepository } from '../repository/films.repository';
 import { CreateOrderDto, OrderDto, OrderResponseDto } from './dto/order.dto';
 
@@ -29,7 +33,7 @@ export class OrderService {
 
       const film = filmsMap.get(ticket.film);
       if (!film) {
-        throw new BadRequestException(`Фильм с ID ${ticket.film} не найден`);
+        throw new NotFoundException(`Фильм с ID ${ticket.film} не найден`);
       }
 
       await this.filmsRepository.updateFilmSession(

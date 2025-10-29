@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Film } from '../films/models/films.model';
@@ -37,7 +42,7 @@ export class FilmsRepository implements IFilmsRepository {
   ): Promise<Film> {
     const session = film.schedule.find((s) => s.id === sessionId);
     if (!session) {
-      throw new BadRequestException(`Сеанс с ID ${sessionId} не найден`);
+      throw new NotFoundException(`Сеанс с ID ${sessionId} не найден`);
     }
 
     if (session.daytime !== daytime) {
@@ -45,7 +50,7 @@ export class FilmsRepository implements IFilmsRepository {
     }
 
     if (session.taken.includes(seatKey)) {
-      throw new BadRequestException(`Место ${seatKey} уже занято`);
+      throw new ConflictException(`Место ${seatKey} уже занято`);
     }
 
     session.taken.push(seatKey);
