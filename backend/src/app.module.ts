@@ -1,7 +1,7 @@
 import { FilmsModule } from './films/films.module';
 import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as path from 'node:path';
 
 import { configProvider } from './app.config.provider';
@@ -18,13 +18,14 @@ const rootPath = isDev
     ConfigModule.forRoot({
       isGlobal: true,
       cache: true,
+      envFilePath: '.env',
     }),
     MongooseModule.forRootAsync({
-      useFactory: () => {
-        const dbUrl =
-          process.env.DATABASE_URL || 'mongodb://localhost:27017/afisha';
-        return { uri: dbUrl };
-      },
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('DATABASE_URL'),
+      }),
+      inject: [ConfigService],
     }),
     ServeStaticModule.forRoot({
       rootPath: rootPath,

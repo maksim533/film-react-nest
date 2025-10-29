@@ -17,25 +17,24 @@ export class FilmsRepository implements IFilmsRepository {
     return this.filmModel.find().exec();
   }
 
-  async findById(id: string): Promise<Film | null> {
-    return this.filmModel.findOne({ id: id }).exec();
+  async findById(id: string): Promise<Film> {
+    return await this.filmModel.findOne({ id: id }).exec();
   }
 
   async countTotal(): Promise<number> {
     return this.filmModel.countDocuments().exec();
   }
 
-  async createOrderSession(
-    filmId: string,
+  async findByIds(ids: string[]): Promise<Film[]> {
+    return this.filmModel.find({ id: { $in: ids } }).exec();
+  }
+
+  async updateFilmSession(
+    film: Film,
     sessionId: string,
     seatKey: string,
     daytime: string,
   ): Promise<Film> {
-    const film = await this.findById(filmId);
-    if (!film) {
-      throw new BadRequestException(`Фильм с ID ${filmId} не найден`);
-    }
-
     const session = film.schedule.find((s) => s.id === sessionId);
     if (!session) {
       throw new BadRequestException(`Сеанс с ID ${sessionId} не найден`);
@@ -50,7 +49,6 @@ export class FilmsRepository implements IFilmsRepository {
     }
 
     session.taken.push(seatKey);
-
     return await film.save();
   }
 }
