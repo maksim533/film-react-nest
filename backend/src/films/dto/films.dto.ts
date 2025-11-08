@@ -1,7 +1,5 @@
-//TODO описать DTO для запросов к /films
-
 import { IsArray, IsNumber, IsString } from 'class-validator';
-import { Film, Session } from '../models/films.model';
+import { FilmData, SessionData } from './films-data.interface';
 
 export class FilmsDto {
   @IsString()
@@ -23,9 +21,9 @@ export class FilmsDto {
   @IsString()
   cover: string;
   @IsArray()
-  schedule: Session[];
+  schedule: SessionData[];
 
-  constructor(film: Film) {
+  constructor(film: FilmData) {
     this.id = film.id;
     this.rating = film.rating;
     this.director = film.director;
@@ -52,9 +50,9 @@ export class SessionDto {
   @IsNumber()
   price: number;
   @IsArray()
-  taken: string[];
+  taken: string | string[];
 
-  constructor(session: Session) {
+  constructor(session: SessionData) {
     this.id = session.id;
     this.daytime = session.daytime;
     this.hall = session.hall;

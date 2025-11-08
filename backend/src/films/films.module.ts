@@ -1,16 +1,26 @@
 import { Module } from '@nestjs/common';
 import { FilmsController } from './films.controller';
 import { FilmsService } from './films.service';
-import { FilmsRepository } from '../repository/films.repository';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Film, FilmSchema } from './models/films.model';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import {
+  FilmPostgresEntity,
+  SchedulePostgresEntity,
+} from './entities/films.postgres.entity';
+import {
+  FilmMongoEntity,
+  ScheduleMongoEntity,
+} from './entities/films.mongodb.entity';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Film.name, schema: FilmSchema }]),
+    TypeOrmModule.forFeature(
+      process.env.DATABASE_DRIVER === 'postgres'
+        ? [FilmPostgresEntity, SchedulePostgresEntity]
+        : [FilmMongoEntity, ScheduleMongoEntity],
+    ),
   ],
   controllers: [FilmsController],
-  providers: [FilmsService, FilmsRepository],
-  exports: [FilmsRepository],
+  providers: [FilmsService],
+  exports: [],
 })
 export class FilmsModule {}
