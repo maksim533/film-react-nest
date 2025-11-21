@@ -130,6 +130,7 @@ jobs:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SERVER_SSH_KEY }}
+        fingerprint: ${{ secrets.SSH_FINGERPRINT }}
         script: |
           cd /home/deployer/app
           
