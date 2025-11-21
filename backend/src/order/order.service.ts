@@ -1,14 +1,18 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { FilmsRepository } from '../repository/films.repository';
 import { CreateOrderDto, OrderDto, OrderResponseDto } from './dto/order.dto';
+import { IFilmsRepository } from '../repository/films.repository.interface';
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly filmsRepository: FilmsRepository) {}
+  constructor(
+    @Inject('FilmsRepository')
+    private readonly filmsRepository: IFilmsRepository,
+  ) {}
 
   async createOrder(createOrder: CreateOrderDto): Promise<OrderResponseDto> {
     const { tickets } = createOrder;
