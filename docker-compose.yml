@@ -1,0 +1,69 @@
+version: '3.8' 
+
+services: 
+  backend:
+    image: ${BACKEND_IMAGE}
+    container_name: backend
+    volumes:
+      - backend_public:/app/public
+    env_file:
+      - .env
+    depends_on:
+      - database  
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  database:
+    image: postgres:16-alpine
+    container_name: database
+    env_file:
+      - .env  
+    environment:
+      - POSTGRES_DB=${DATABASE_DATABASE}    
+      - POSTGRES_USER=${DATABASE_USERNAME}  
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  frontend:
+    container_name: frontend
+    image: ${FRONTEND_IMAGE}
+    volumes:
+      - backend_public:/var/www/public:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    env_file:
+      - .env  
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    restart: unless-stopped
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL} 
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD} 
+    ports:
+      - "8080:80"
+    depends_on:
+      - database
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  backend_public:
+
+networks:
+  app-network:
+    driver: bridge
