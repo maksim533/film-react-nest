@@ -1,1 +1,1 @@
-httpы://film.nest.nomorepartiessbs.ru
+https://film.nest.nomorepartiessbs.ru
