@@ -33,6 +33,7 @@ export class FilmsDto {
     this.description = film.description;
     this.image = film.image;
     this.cover = film.cover;
+    this.schedule = film.schedule || [];
   }
 }
 
